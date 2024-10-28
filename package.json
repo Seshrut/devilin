@@ -1,0 +1,15 @@
+{
+  "name": "devilin",
+  "version": "1.0.0",
+  "description": "An AI tool to make development easy",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Seshrut Jain",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.2"
+  }
+}
