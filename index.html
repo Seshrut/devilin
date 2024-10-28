@@ -6,8 +6,18 @@
     <title>Devilin</title>
     <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
-<body>
-    hi
+<body style="background-color:rgb(0, 0, 0)">
+    <div id="menu"></div>
+    <div id="app">
+        <div id="output" class="box" style="height: 80vh; width: 61vw;display: inline-block;">
+        </div>
+        <div id="status" class="box" style="height: 80vh; width: 31vw;display: inline-block;">
+        </div>
+        <div id="input" class="box" style="height: 12vh; width: 93vw;display: flex;">
+            <textarea id="inp"></textarea>
+            <input type="image" src="img/send.png" id="send" style="display: inline" onmouseover="this.style='height:30%; width:2.5%; margin-top: 20px;margin-right:10px;margin-left:8px'" onmouseout="this.style='height:60%;width:5%;margin-top: 10px;margin-left:auto'" onclick="this.src='img/loading.gif';this.onmouseout='';">
+        </div>
+    </div>
     <script src="renderer.js"></script>
 </body>
 </html>
