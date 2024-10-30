@@ -22,7 +22,7 @@ function AI_preload(api){
               category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
               threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
           },
-      ];
+        ];
       // use the model
       const gen_model = genAI.getGenerativeModel({ model: "gemini-pro" }, safetySettings);
       // tweak model (TODO)
@@ -63,10 +63,12 @@ function AI_preload(api){
         ]
       )
   
-  }
+}
   
-  // function to talk to model
-  async function talk(promt) {
+
+
+// function to talk to model
+async function talk(promt) {
     const msg = promt;
     try {
         const result = await ichat.sendMessage(msg);
@@ -77,6 +79,8 @@ function AI_preload(api){
     catch (error) {
         console.log(error)
     }
-  }
+}
 
+
+// exporting modules
 module.exports = { AI_preload, talk };

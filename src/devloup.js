@@ -33,10 +33,14 @@ async function start(user_input,debug=false) {
 }
 
 
+
+
 async function theloop(llm_responce, debug = false) {
     // talk to gemini
     var code = llm_responce.split('```')
+
     // remove escape characters(TODO)
+
     if (debug){console.log(code)}
     if (debug){console.log("counter at: "+counter)}
     // check if code is divided (if more than 2 ``` then code is divided)
@@ -54,6 +58,8 @@ async function theloop(llm_responce, debug = false) {
             }
         }
     }
+
+    // name and keep files
     for (let i = 0; i > code.length; i=i+2){
         // code[i] -> file name code[i+1] -> file content
         var filename = code[i]
@@ -63,6 +69,8 @@ async function theloop(llm_responce, debug = false) {
         fs.writeFileSync(filename, filedata);
     }
 
+
+    
     
 }
 
