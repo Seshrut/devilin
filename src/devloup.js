@@ -1,12 +1,10 @@
 
-async function start(user_input,debug=false) {
+async function start(user_input,chat_session,debug=false) {
     const fs = require('fs');
     const path = require('path');
-    //set tries counter to 0
-    var counter = 0;
     const dirPath = path.join(require('os').homedir(), 'Documents', 'Devilin');// main path
     if (!fs.existsSync(dirPath)) {// if main path absent
-        fs.mkdir(dirPath);
+        fs.mkdirSync(dirPath);
     }
     // unique session folder
     var datetime = '';
@@ -25,24 +23,36 @@ async function start(user_input,debug=false) {
     const output = execSync('git init', { cwd: sessionDirPath });
     if (debug) {console.log(output);}
 
-    const talk = require('src/setup_llm.js');
-    responce = talk(user_input)
+    const {talk} = require('./setup_llm');
+    responce = await talk(user_input + '\n do not forget to add ~file.extension it is critical',chat_session)
     if(debug){console.log(responce)}
-    await theloop(responce,debug=debug);
-
+    while (True){
+        try{
+        condition = await theloop(responce,chat_session,sessionDirPath,debug=debug);
+        }
+        catch (error) {
+            console.log(error)
+            break
+        }
+        if (condition[0]=='['){
+            responce = condition
+        }
+    }
 }
 
 
 
 
-async function theloop(llm_responce, debug = false) {
+async function theloop(llm_responce,chat_session,sessionDirPath,debug = false) {
+    const fs = require('fs');
+    const path = require('path');
+    //set tries counter to 0
+    var counter = 0;
     // talk to gemini
     var code = llm_responce.split('```')
 
-    // remove escape characters(TODO)
-
-    if (debug){console.log(code)}
-    if (debug){console.log("counter at: "+counter)}
+    if (debug){console.log(`split \`\`\` :-\n${code}`)}
+    if (debug){console.log(`counter at:-\t ${counter}`)}
     // check if code is divided (if more than 2 ``` then code is divided)
 
     if (code.length > 3) {// multifile error
@@ -50,29 +60,66 @@ async function theloop(llm_responce, debug = false) {
             // multifile error
             counter ++
             if (counter > 5){
-                if (debug){console.log("Error:1 expected single got many");console.log(code)}
-                return "Error: 1" // could not be done in one file
+                if (debug){console.log(`Error:1 expected single got many \n${code}`)}
+                throw new Error("Error:1 expected single file of code got many")
             }
             else{
-                theloop(await talk("[machine]\nError: expected code to be in a singular file."))
+                return "[machine]\nError: expected code to be in a singular file."
             }
         }
     }
-
+    var fileadded = []
     // name and keep files
-    for (let i = 0; i > code.length; i=i+2){
+    for (let i = 0; i < code.length; i=i+2){
         // code[i] -> file name code[i+1] -> file content
-        var filename = code[i]
+
+        if(debug){console.log(`code[i]=${code[i]}`)};
+        
+        var filename = code[i].slice(1)//remove '~' char
         var filedata = code[i+1]
-        if (debug){console.log("fileName: "+filename);console.log("fileData: "+filedata)}
-        // add file to repo
-        fs.writeFileSync(filename, filedata);
+        
+        // get index of first \ in filedata
+        if (filedata){
+            var index = filedata.indexOf("\n");
+            if(debug){console.log(`index=\t${index}`);}
+            if (index){
+                // remove 0 to index from filedata. It has the code language
+                filedata = filedata.slice(index+1,filedata.length-1);
+                if (filename){
+                // save file
+                fs.writeFileSync(path.join(sessionDirPath, filename), filedata);
+                fileadded.push(filename)
+                }
+                else{
+                    if (counter>5){
+                    throw new Error("Error:2 failed to extract filename. file not saved")
+                    }
+                    else{
+                    return"[machine]\nError: filename is not properly"
+                    }
+                }
+            }
+        }
+        
+        
+        if (debug){console.log(`fileName:-\t ${filename}\nfileData:-\t ${filedata}`)}
+        
     }
+    // ask which file to run
+    if (multifile){
+        const {talk} = require('./setup_llm');
+        responce = await talk('[machine] Which file to run?\n'+fileadded.join('\n')+'\n just write in original notation (eg. ~main.py)', chat_session)
+        // find and remove ~ in responce
+        var filename = responce.split('~')[1]
+    }
+    else{
+        filename = fileadded[0]
+    }
+    // get test cases (TODO)
 
 
-    
     
 }
-
-
-module.exports = { start, theloop };
+// const {AI_preload} = require('./setup_llm');
+// start('Make a python code to add two integers, use class maath with "add" method',AI_preload('api removed'),true)
+// module.exports = { start, theloop };

@@ -1,9 +1,9 @@
-
+let chat_session;
 function AI_preload(api){
     // import
     const { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } = require("@google/generative-ai");
     // provide api key
-    const genAI = new GoogleGenerativeAI(api);
+    const genAI = new GoogleGenerativeAI(api);//remove this
   
       const safetySettings = [
           {
@@ -24,13 +24,13 @@ function AI_preload(api){
           },
         ];
       // use the model
-      const gen_model = genAI.getGenerativeModel({ model: "gemini-pro" }, safetySettings);
+      const gen_model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }, safetySettings);
       // tweak model (TODO)
       chat_session = gen_model.startChat(
         history=[
             {
                 role:"user",
-                parts:["You are a helper AI, user will give you a problem to code and will specify a language (if not use python as default), a machine will run the code and give you response accordingly... \ndo not give responce other than just the code. I DONT WANT ANY EXPLAINATION, just add file name(of your choise) above the soulution {!filename.extension} , to talk to user use {!USER} and don't put code after using it reply to this with a simple 'HI'"]
+                parts:["You are a helper AI, you usually forget to take input from console and giving file name..., user will give you a problem to code and will specify a language (if not use python as default), a machine will run the code and give you response accordingly, so TAKE INPUT FROM CONSOLE dont take random values give input() statement... \n, just add file name(of your choise) above the soulution [~filename.extension] DO NOT FORGET TO NAME FILES WITH PROPER EXTENSION , to talk to user use [~USER] and don't put code after using it reply to this with a simple 'HI'"]
             },
             {
                 role:"model",
@@ -42,7 +42,7 @@ function AI_preload(api){
             },
             {
                 role:"model",
-                parts:["{!main.py} ```python\ndef add_numbers():\n  num1 = float(input(\"Enter first number: \"))\n  num2 = float(input(\"Enter second number: \"))\n  sum = num1 + num2\n  print(\"The sum of\", num1, \"and\", num2, \"is:\", sum)\n\nadd_numbers()\n```"]
+                parts:[" ~main.py ```python\ndef add_numbers():\n  num1 = float(input(\"Enter first number: \"))\n  num2 = float(input(\"Enter second number: \"))\n  sum = num1 + num2\n  print(\"The sum of\", num1, \"and\", num2, \"is:\", sum)\n\nadd_numbers()\n```"]
             },
             {
                 role:"user",
@@ -50,7 +50,7 @@ function AI_preload(api){
             },
             {
                 role:"model",
-                parts:["{!main.py} ```python\ndef add_numbers():\n  num1 = int(input(\"Enter first number: \"))\n  num2 = int(input(\"Enter second number: \"))\n  sum = num1 + num2\n  print(sum)\n\nadd_numbers()\n```"]
+                parts:[" ~main.py ```python\ndef add_numbers():\n  num1 = int(input(\"Enter first number: \"))\n  num2 = int(input(\"Enter second number: \"))\n  sum = num1 + num2\n  print(sum)\n\nadd_numbers()\n```"]
             },
             {
                 role:"user",
@@ -58,20 +58,21 @@ function AI_preload(api){
             },
             {
                 role:"model",
-                parts:["{!USER} You're Welcome. would you like me to try something else?"]
+                parts:[" ~USER You're Welcome. would you like me to try something else?"]
             }
         ]
       )
+    return chat_session;
   
 }
   
 
 
 // function to talk to model
-async function talk(promt) {
+async function talk(promt,chat_session) {
     const msg = promt;
     try {
-        const result = await ichat.sendMessage(msg);
+        const result = await chat_session.sendMessage(msg);
         const response = await result.response;
         const text = response.text();
         return text;

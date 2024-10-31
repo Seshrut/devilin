@@ -23,10 +23,11 @@ const createWindow = () => {
 
 // on user input
 ipcMain.on('promt',(evt,msg)=>{
+  var chat_session;
   // setup LLM
   console.log("recieved promt: "+msg)
   const {AI_preload} = require('./src/setup_llm.js');
-  AI_preload(api)
+  chat_session = AI_preload(api)
   const {start} = require('./src/devloup.js');
   start(msg,true)
 })
