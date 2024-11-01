@@ -33,7 +33,7 @@
     border: 0;
 }
 .inpbox{
-    width: 50%;
+    width: 90%;
     height: 15%;
     display: inline;
     border-style: solid;
@@ -41,6 +41,8 @@
     border-color:black;
     background-color: #1f1f1f;
     color: white;
+    margin-left: 2%;
+    margin-top: 2%;
 }
 #inp{
     color:#ffffff;

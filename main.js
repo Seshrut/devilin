@@ -8,6 +8,7 @@ const createWindow = () => {
         contextIsolation: false
       }
     })
+    win.maximize()
   
     win.loadFile('index.html')
   }
