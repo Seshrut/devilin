@@ -8,14 +8,36 @@
 </head>
 <body style="background-color:rgb(0, 0, 0)">
     <div id="menu"></div>
-    <div id="app">
-        <div id="output" class="box" style="height: 80vh; width: 61vw;display: inline-block;">
+    <div id="app" style="position: relative;height: 97vh;">
+        <div id="output" class="box" style="height: 87vh; width: 61vw;display: inline-block;"></div>
+        <div id="sidebar" class="box" style="height: 87vh; width: 31vw;display: inline-block;position: relative;">
+            <div id="status" class="box" style="height: 48%;width: 90%;position: absolute;top:0%;margin-left: 5%;margin-right: 5%;background-color: brown;"></div>
+            <div id="testcase" class="box" style="height: 48%;width: 90%;position: absolute;top:0%;margin-left: 5%;margin-right: 5%;top:50%;background-color: blueviolet;">
+                <div id="tab" class="box" style="height: 15%;width: 97%;background-color: aqua;border-radius: 5px;">
+                    <!-- tabs  (11.8% each)-->
+                    <div id="tab1" class="box tab" style="margin-left: 2%;" onclick="clicked(this.id)">1</div>
+                    <!-- tab -/+ -->
+                    <div id="tabminus" class="box tab minus" style="  margin-left: 72.8%;background-color: grey;">-</div> 
+                    <div id="tabplus" class="box tab plus" style="margin-left: 84.6%;">+</div>
+                </div>
+                <div id="case" class='box' style="height: 80%;width: 90%;background-color: darkgoldenrod;display: flex;">
+                    <div id="inputs" class="box" style="height: 90%;width: 50%;background-color: dodgerblue;display: inline;max-height: 90%;overflow-y: auto;">
+                        <input id='inp1' class="inpbox" type="text" placeholder="Input">
+                        <input id='inpminus1' type="button" class="box minus" value="-" style="width: 20%;border-radius: 10%;">
+                        <!-- <input id='inp2' class="inpbox" type="text" placeholder="Input">
+                        <input id='inpminus2' type="button" class="box minus" value="-" style="width: 20%;border-radius: 10%;"> -->
+                        <!-- plus input -->
+                         <input id="inpplus" type="button" class="box plus" value="+" style="width:20%;border-radius: 10%;">
+                    </div>
+                    <div id="outputs" class="box" style="height: 90%;width: 50%;;background-color:firebrick;display: inline;">
+
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="status" class="box" style="height: 80vh; width: 31vw;display: inline-block;">
-        </div>
-        <div id="input" class="box" style="height: 12vh; width: 93vw;display: flex;">
+        <div id="input" class="box" style="height: 5vh; width: 93vw;display: flex;position: absolute;bottom: 2px;">
             <textarea id="inp"></textarea>
-            <input type="image" src="img/send.png" id="send" style="display: inline" onmouseover="this.style='height:30%; width:2.5%; margin-top: 20px;margin-right:10px;margin-left:8px'" onmouseout="this.style='height:60%;width:5%;margin-top: 10px;margin-left:auto'" onclick="this.src='img/loading.gif';this.onmouseout='';">
+            <input type="image" src="img/send.png" id="send" style="display: inline" onclick="this.src='img/loading.gif';">
         </div>
     </div>
     <script src="renderer.js"></script>
