@@ -13,14 +13,16 @@ button.addEventListener('click',()=> {
 
 })
 
-//add tabs
+
 var tabs = 1;
 var leftMargin = 2;
 const tabplus = document.getElementById('tabplus');
 const tabminus = document.getElementById('tabminus');
 const tab = document.getElementById('tab');
+
+//add tabs
 tabplus.addEventListener('click',()=>{
-    tabminus.style.backgroundColor = 'crimson';
+    tabminus.style.backgroundColor = 'red';
     if (tabs<6){
         console.log('tabplus');
         tabs++;
@@ -52,7 +54,7 @@ tabminus.addEventListener('click',()=>{
         leftMargin = leftMargin - 11.8;
         // remove tab
         //set tabminus gb color to green
-        tabminus.style.backgroundColor = 'crimson';
+        tabminus.style.backgroundColor = 'red';
         delete testcases['tab'+tabs]
     }
     if(tabs<=1){
@@ -60,7 +62,7 @@ tabminus.addEventListener('click',()=>{
     }
 })
 //selected tab
-function clickedtab(id){
+function clickedtab(id){//selecting tabs
     //save data in past opened id
     var lastinpbox = Object.keys(testcases[selectedtab]['inp']).length
     // save inputs
