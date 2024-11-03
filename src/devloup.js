@@ -19,7 +19,7 @@ async function start(user_input,chat_session,debug=false) {
     fs.mkdirSync(sessionDirPath); // Use mkdirSync for synchronous operation
 
     // start git in the repo
-    const execSync = require('child_process').execSync;
+    const {spawn} = require('child_process');
     const output = execSync('git init', { cwd: sessionDirPath });
     if (debug) {console.log(output);}
 
@@ -27,8 +27,10 @@ async function start(user_input,chat_session,debug=false) {
     responce = await talk(user_input + '\n do not forget to add ~file.extension it is critical',chat_session)
     if(debug){console.log(responce)}
     while (True){
+        //set tries counter to 0
+        var counter = 0;
         try{
-        condition = await theloop(responce,chat_session,sessionDirPath,debug=debug);
+        condition = await theloop(responce,chat_session,sessionDirPath,spawn,counter,debug=debug);
         }
         catch (error) {
             console.log(error)
@@ -43,11 +45,10 @@ async function start(user_input,chat_session,debug=false) {
 
 
 
-async function theloop(llm_responce,chat_session,sessionDirPath,debug = false) {
+async function theloop(llm_responce,chat_session,sessionDirPath,spawn=require('child_process').spawn,counter,debug = false) {
     const fs = require('fs');
     const path = require('path');
-    //set tries counter to 0
-    var counter = 0;
+    const {spawn} = require('child_process')
     // talk to gemini
     var code = llm_responce.split('```')
 
@@ -108,15 +109,76 @@ async function theloop(llm_responce,chat_session,sessionDirPath,debug = false) {
     // ask which file to run
     if (multifile){
         const {talk} = require('./setup_llm');
-        responce = await talk('[machine] Which file to run?\n'+fileadded.join('\n')+'\n just write in original notation (eg. ~main.py)', chat_session)
+        responce = await talk('[machine]\nWhich file to run?\n'+fileadded.join('\n')+'\n just write in original notation (eg. ~main.py)', chat_session)
+        if(debug){console.log(`responce:-\t ${responce}`)}
         // find and remove ~ in responce
-        var filename = responce.split('~')[1]
+        var mainfilename = responce.split('~')[1]
+        if(debug){console.log(`mainfilename:-\t ${mainfilename}`)}
     }
     else{
-        filename = fileadded[0]
+        var mainfilename = fileadded[0]
+        if(debug){console.log(`mainfilename:-\t ${mainfilename}`)}
     }
-    // get test cases (TODO)
-
+    // get test cases from renderer.js
+    var testcases = require('..renderer.js').testcases
+    // how many cases
+    var cases_num = Object.keys(testcases).length
+    // loop through cases and try each one out (update status from here)
+    for(let i = 1;i<=cases_num;i++){
+        //each case
+        var caseI = Object.keys(testcases['tab'+i]['inp']).length
+        var caseO = Object.keys(testcases['tab'+i]['out']).length
+        // get language python/cpp/js/java
+        var lang = mainfilename.split('.')[1]
+        switch (lang) {
+            case 'py':
+                var pre = 'python'
+            case 'cpp':
+                var pre = 'cpp'
+            case 'js':
+                var pre = 'node'
+            case 'java':
+                var pre = 'javac'
+        }
+        //run file
+        var codeprocess = spawn(pre,[mainfilename])
+        //enter each input
+        for(let o = 1;o<=caseI;o++){
+            var inpN = testcases[caseI]['inp'][inpN].toString()+'\n'
+            codeprocess.stdin.write(inpN)
+        }
+        //get output
+        var out_list;
+        codeprocess.stdout.on('data',(data)=>{
+            var out = data.toString()
+            // show user progress(todo)
+            out_list = out.split('\n')
+        })
+        //manage error
+        pythoncode.stderr.on('data',(err)=>{
+            counter++
+            if (counter>5){
+                throw new Error("Error:3 failed to pass testcases")
+            }
+            return `[machine]\nError:\nError:\nInput given:\n${testcases[caseI]['inp']}\nError recived:\n${err}`
+        })
+        // compare with outputs
+        for(let t = 1;t<=caseO;t++){
+            if(out_list[t-1]!=testcases[caseO]['out'][out_list[t-1]]){
+                counter++
+                if (counter>5){
+                    throw new Error("Error:4 failed to pass testcases")
+                }
+                return `[machine]\nError:\nError:\nInput given:\n${testcases[caseI]['inp']}\nExpected output:\n${testcases[caseO]['out']}\nRecived output:\n${out}`
+            }
+            else{
+                if(debug){console.log(`Testcase ${i} passed`)}
+            }
+        }
+    }
+    // all test cases passes
+    if(debug){console.log(`all test cases passed\nCases:\n${testcases}`)}
+    return 'success';
 
     
 }

@@ -3,7 +3,7 @@ const button = document.getElementById('send');
 var selectedtab = 'tab1'
 //how to save test cases
 // var testcases={'tab1':{'inp':{'inp1':'oogabooga'},'out':{}},'tab2':{'inp':{},'out':{}},'tab3':{'inp':{},'out':{}},'tab4':{'inp':{},'out':{}},'tab5':{'inp':{},'out':{}},'tab6':{'inp':{},'out':{}}}
-var testcases={'tab1':{'inp':{'inp1':''},'out':{'out1':''}}}
+export var testcases={'tab1':{'inp':{'inp1':''},'out':{'out1':''}}}
 // send promt to AI
 button.addEventListener('click',()=> {
     // promt to send
